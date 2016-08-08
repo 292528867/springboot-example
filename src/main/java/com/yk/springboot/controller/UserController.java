@@ -1,11 +1,13 @@
 package com.yk.springboot.controller;
 
 import com.yk.springboot.entity.User;
+import com.yk.springboot.service.UserService;
 import com.yk.springboot.shiro.TelPasswordToken;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +21,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Object login(String tel, String password) {
@@ -38,13 +43,14 @@ public class UserController {
         return resultMap;
     }
 
-    @RequestMapping(value = "/loginOut",method = RequestMethod.POST)
+    @RequestMapping(value = "/loginOut", method = RequestMethod.POST)
     public Object loginOut() {
         return "loginOut";
     }
 
     /**
      * 未登录时请求需要登录才能访问的url
+     *
      * @return
      */
     @RequestMapping(value = "requestBeforeLogin")
@@ -52,9 +58,14 @@ public class UserController {
         return "用户未验证，请先登录app！";
     }
 
-    @RequestMapping(value = "test")
-    public Object test() {
-        return "test";
+    /**
+     * 保存用户
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "save", method = RequestMethod.POST)
+    public Object save(User user) {
+        return userService.saveUser(user);
     }
 
 }
