@@ -5,7 +5,9 @@ import com.yk.springboot.service.UserService;
 import com.yk.springboot.shiro.TelPasswordToken;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +68,13 @@ public class UserController {
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public Object save(User user) {
         return userService.saveUser(user);
+    }
+
+    @RequestMapping(value = "getUserInfo",method = RequestMethod.GET)
+    public Object getUserInfo(){
+        Subject subject = SecurityUtils.getSubject();
+        User user =(User) subject.getPrincipal();
+        return user;
     }
 
 }

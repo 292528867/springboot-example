@@ -8,7 +8,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "t_user")
-public class User extends AbstractBaseEntity<Long> {
+public class User extends AbstractBaseEntity {
 
     private String tel;
 

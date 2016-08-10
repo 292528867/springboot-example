@@ -1,9 +1,12 @@
 package com.yk.springboot.shiro;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.SimpleSession;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.subject.support.WebDelegatingSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -11,6 +14,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.servlet.ServletRequest;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -66,14 +70,13 @@ public class RedisSessionDao extends AbstractSessionDAO {
         if (session == null || session.getId() == null) {
             LOGGER.error("session or sessionId is null");
         }
-        System.out.println(redisTemplate.toString());
         //保存到redis
         redisTemplate.execute(new RedisCallback() {
             @Override
             public Object doInRedis(RedisConnection connection) throws DataAccessException {
                 session.setTimeout(30 * 60 * 1000); //30分钟有效期
                 //序列化
-                connection.setEx(getKeyWithSession(session.getId()), 30 * 60 ,redisTemplate.getDefaultSerializer().serialize(session));
+                connection.setEx(getKeyWithSession(session.getId()), 30 * 60, redisTemplate.getDefaultSerializer().serialize(session));
                 return null;
             }
         });
@@ -98,6 +101,13 @@ public class RedisSessionDao extends AbstractSessionDAO {
     public Collection<Session> getActiveSessions() {
         return null;
     }
+
+/*    @Override
+    protected Serializable generateSessionId(Session session) {
+        WebDelegatingSubject subject = (WebDelegatingSubject) SecurityUtils.getSubject();
+        ServletRequest request = subject.getServletRequest();
+        return request.getParameter("tel")+"_"+subject.getHost();
+    }*/
 
     /**
      * 生成redis的key

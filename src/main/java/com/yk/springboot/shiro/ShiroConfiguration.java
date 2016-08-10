@@ -1,5 +1,8 @@
 package com.yk.springboot.shiro;
 
+import com.yk.springboot.entity.UrlFilter;
+import com.yk.springboot.repository.UrlFilterRepository;
+import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.AnonymousFilter;
@@ -10,10 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import javax.servlet.Filter;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +29,9 @@ public class ShiroConfiguration {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private UrlFilterRepository urlFilterRepository;
+
     /**
      * BeanPostProcessor是spring容器的一个扩展点，注意这里配置成static。
      * shiro的这个扩展，用于自动执行init()方法，destory()方法，
@@ -34,7 +41,7 @@ public class ShiroConfiguration {
      * @return
      */
     @Bean(name = "lifecycleBeanPostProcessor")
-    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 
@@ -50,9 +57,8 @@ public class ShiroConfiguration {
         return userRealm;
     }
 
-
     @Bean
-    public RedisSessionDao sessionDAO(RedisTemplate redisTemplate) {
+    public RedisSessionDao sessionDAO() {
         return new RedisSessionDao(redisTemplate);
     }
 
@@ -65,9 +71,27 @@ public class ShiroConfiguration {
     }
 
     @Bean
-    public DefaultWebSecurityManager securityManager(DefaultWebSessionManager sessionManager) {
+    public RedisCache redisCache() {
+        return new RedisCache(redisTemplate);
+    }
+
+    @Bean
+    public RedisCacheManager redisCacheManager() {
+        return new RedisCacheManager(redisTemplate);
+    }
+
+
+    @Bean
+    public DefaultWebSecurityManager securityManager() {
         final DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+//        securityManager.setSubjectFactory(new CustomSubjectFactory());
+        //sessionManager配置
+        CustomWebSessionManager sessionManager = new CustomWebSessionManager();
+        sessionManager.setSessionDAO(sessionDAO());
+        sessionManager.setSessionListeners(Collections.singleton(new CustomSessionListener()));
+
         securityManager.setSessionManager(sessionManager);
+        securityManager.setCacheManager(redisCacheManager());
         securityManager.setRealm(userRealm());
         return securityManager;
     }
@@ -95,6 +119,10 @@ public class ShiroConfiguration {
         filterChainDefinitions.put("/user/requestBeforeLogin", "anon");
 //        filterChainDefinitions.put("/user/loginSuccess", "authc");
 //        filterChainDefinitions.put("/user/loginFailure", "authc");
+        List<UrlFilter> urlFilters = urlFilterRepository.findAll();
+        for (UrlFilter urlFilter : urlFilters) {
+            filterChainDefinitions.put(urlFilter.getUrl(), urlFilter.getFilters());
+        }
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitions);
         return shiroFilterFactoryBean;
     }

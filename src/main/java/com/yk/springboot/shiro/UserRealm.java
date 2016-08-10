@@ -19,6 +19,12 @@ public class UserRealm extends AuthorizingRealm {
     @Autowired
     private UserRepository userRepository;
 
+    public UserRealm() {
+         setCachingEnabled(true);
+         setAuthenticationCachingEnabled(true);
+         setAuthenticationCacheName("userAuthenticationCache");
+    }
+
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
         TelPasswordToken token = (TelPasswordToken) authenticationToken;
