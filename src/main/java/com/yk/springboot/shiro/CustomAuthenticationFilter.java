@@ -2,6 +2,9 @@ package com.yk.springboot.shiro;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.slf4j.Logger;
@@ -29,7 +32,6 @@ public class CustomAuthenticationFilter extends AuthenticatingFilter {
     private String requestBeforeLoginUrl;
 
 
-
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) throws Exception {
         String tel = WebUtils.getCleanParam(request, usernameParam);
@@ -45,10 +47,11 @@ public class CustomAuthenticationFilter extends AuthenticatingFilter {
             if (WebUtils.toHttp(request).getMethod().equalsIgnoreCase(POST_METHOD)) {
                 if (LOG.isTraceEnabled())
                     LOG.trace("开始验证用户");
-                return executeLogin(request, response);
+                return this.executeLogin(request, response);
             } else {
                 if (LOG.isTraceEnabled())
                     LOG.trace("验证请求不是post请求！");
+                errMsgDispatcher(request, response, "非法请求");
                 return false;
             }
         } else {
@@ -56,8 +59,32 @@ public class CustomAuthenticationFilter extends AuthenticatingFilter {
                 LOG.trace("用户未验证，请先登录app！");
             saveRequest(request);
             //跳转到通知前端异常的接口
-            RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher(this.requestBeforeLoginUrl);
-            dispatcher.forward(request, response);
+            errMsgDispatcher(request, response, "用户未验证，请先登录app！");
+            return false;
+        }
+    }
+
+    @Override
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
+        AuthenticationToken token = createToken(request, response);
+        if (token == null) {
+            String msg = "createToken method implementation returned null. A valid non-null AuthenticationToken " +
+                    "must be created in order to execute a login attempt.";
+            throw new IllegalStateException(msg);
+        }
+        try {
+            Subject subject = getSubject(request, response);
+            subject.login(token);
+            return onLoginSuccess(token, subject, request, response);
+        } catch (UnknownAccountException e) {
+            //跳转到通知前端异常的接口
+            errMsgDispatcher(request, response, "用户不存在");
+            return false;
+        } catch (IncorrectCredentialsException e) {
+            errMsgDispatcher(request, response, "密码错误");
+            return false;
+        } catch (AuthenticationException e) {
+            errMsgDispatcher(request, response, "未知错误");
             return false;
         }
     }
@@ -67,6 +94,16 @@ public class CustomAuthenticationFilter extends AuthenticatingFilter {
                                      ServletResponse response) {
         // 使用apploginin url 匹配登录request
         return pathsMatch(this.getAppLoginUrl(), request);
+    }
+
+    /**
+     * 跳转到登录异常信息接口
+     *
+     * @param errMsg
+     */
+    private void errMsgDispatcher(ServletRequest request, ServletResponse response, String errMsg) throws Exception {
+        RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher(this.requestBeforeLoginUrl + "?errMsg=" + errMsg);
+        dispatcher.forward(request, response);
     }
 
 //    @Override
@@ -120,6 +157,7 @@ public class CustomAuthenticationFilter extends AuthenticatingFilter {
 
     /**
      * 请求登录后才能访问的接口url
+     *
      * @return
      */
     public String getRequestBeforeLoginUrl() {

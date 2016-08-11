@@ -70,7 +70,7 @@ public class AbstractBaseEntity implements Serializable {
         this.id = id;
     }
 
-    public DateTime getCreatedDate() {
+/*    public DateTime getCreatedDate() {
         return null == createdDate ? null : new DateTime(createdDate);
     }
 
@@ -84,6 +84,21 @@ public class AbstractBaseEntity implements Serializable {
 
     public void setLastModifiedDate(DateTime lastModifiedDate) {
         this.lastModifiedDate = null == lastModifiedDate ? null : lastModifiedDate.toDate();
+    }*/
+
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }

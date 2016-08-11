@@ -1,5 +1,6 @@
 package com.yk.springboot.shiro;
 
+import com.yk.springboot.entity.User;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
@@ -102,12 +103,13 @@ public class RedisSessionDao extends AbstractSessionDAO {
         return null;
     }
 
-/*    @Override
+    @Override
     protected Serializable generateSessionId(Session session) {
         WebDelegatingSubject subject = (WebDelegatingSubject) SecurityUtils.getSubject();
         ServletRequest request = subject.getServletRequest();
+        User user = (User) subject.getPrincipal();
         return request.getParameter("tel")+"_"+subject.getHost();
-    }*/
+    }
 
     /**
      * 生成redis的key

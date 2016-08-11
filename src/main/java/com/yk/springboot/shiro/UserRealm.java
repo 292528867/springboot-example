@@ -20,9 +20,9 @@ public class UserRealm extends AuthorizingRealm {
     private UserRepository userRepository;
 
     public UserRealm() {
-         setCachingEnabled(true);
-         setAuthenticationCachingEnabled(true);
-         setAuthenticationCacheName("userAuthenticationCache");
+        setCachingEnabled(true);
+        setAuthenticationCachingEnabled(true);
+        setAuthenticationCacheName("userAuthenticationCache");
     }
 
     @Override
@@ -31,13 +31,13 @@ public class UserRealm extends AuthorizingRealm {
         String tel = token.getUsername();
         String passord = String.valueOf(token.getPassword());
         User user = userRepository.findByTel(tel);
-    /*    if (StringUtils.isEmpty(tel)) {
+        if (StringUtils.isEmpty(tel)) {
             throw new UnknownAccountException("账号为空");
         } else if (user == null) {
             throw new UnknownAccountException("输入的手机号不存在");
         } else if (!passord.equals(user.getPassword())) {
             throw new IncorrectCredentialsException("用户名或者密码不正确");
-        }*/
+        }
         return new SimpleAuthenticationInfo(user, user.getPassword(), getName());
     }
 

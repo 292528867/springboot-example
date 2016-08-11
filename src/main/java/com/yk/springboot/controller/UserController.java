@@ -29,15 +29,15 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public Object login(String tel, String password) {
-        TelPasswordToken token = new TelPasswordToken(tel, password);
+//        TelPasswordToken token = new TelPasswordToken(tel, password);
         final Subject subject = SecurityUtils.getSubject();
-        try {
+     /*   try {
             subject.login(token);
         } catch (UnknownAccountException e) {
             throw new UnknownAccountException("账号不存在");
         } catch (IncorrectCredentialsException e) {
             throw new IncorrectCredentialsException("用户名或者密码错误");
-        }
+        }*/
         User user = (User) subject.getPrincipal();
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", user.getId());
@@ -56,8 +56,8 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "requestBeforeLogin")
-    public Object requestBeforeLogin() {
-        return "用户未验证，请先登录app！";
+    public Object requestBeforeLogin(String errMsg) {
+        return errMsg;
     }
 
     /**
