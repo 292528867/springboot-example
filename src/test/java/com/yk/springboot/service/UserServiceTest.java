@@ -18,8 +18,9 @@ public class UserServiceTest extends SpringBootExampleApplicationTests{
     @Test
     public void saveUser() throws Exception {
         User user = new User();
-        user.setName("张三");
-        user.setPassword("111");
+        user.setName("yk1");
+        user.setPassword("111111");
+        user.setToken("111");
         userService.saveUser(user);
     }
 }
