@@ -17,8 +17,20 @@ public class User extends AbstractBaseEntity {
     private String password;
 
     private String token;
+    
+   
+    public User() {
+	}
 
-    public String getTel() {
+	public User(String tel, String name, String password, String token) {
+		super();
+		this.tel = tel;
+		this.name = name;
+		this.password = password;
+		this.token = token;
+	}
+
+	public String getTel() {
         return tel;
     }
 

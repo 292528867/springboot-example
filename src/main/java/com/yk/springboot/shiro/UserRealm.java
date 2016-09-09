@@ -32,11 +32,11 @@ public class UserRealm extends AuthorizingRealm {
         String passord = String.valueOf(token.getPassword());
         User user = userRepository.findByTel(tel);
         if (StringUtils.isEmpty(tel)) {
-            throw new UnknownAccountException("账号为空");
+            throw new UnknownAccountException();
         } else if (user == null) {
-            throw new UnknownAccountException("输入的手机号不存在");
+            throw new UnknownAccountException();
         } else if (!passord.equals(user.getPassword())) {
-            throw new IncorrectCredentialsException("用户名或者密码不正确");
+            throw new IncorrectCredentialsException();
         }
         return new SimpleAuthenticationInfo(user, user.getPassword(), getName());
     }

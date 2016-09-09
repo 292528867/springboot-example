@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.servlet.ServletRequest;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * Created by yk on 16/6/6.

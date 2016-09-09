@@ -94,3 +94,6 @@ fabric.properties
 .mvn
 target
 spring-boot-example.iml
+.classpath
+.settings
+.project
