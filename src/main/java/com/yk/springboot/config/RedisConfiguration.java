@@ -1,10 +1,13 @@
 package com.yk.springboot.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisClusterConfiguration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -25,6 +28,9 @@ public class RedisConfiguration {
     @Value("${spring.redis.database}")
     private int database;
 
+    @Autowired
+    private RedisClusterConfigurationProperties redisClusterConfigurationProperties;
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory factory = new JedisConnectionFactory();
@@ -35,8 +41,14 @@ public class RedisConfiguration {
     }
 
     @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new JedisConnectionFactory(new RedisClusterConfiguration(redisClusterConfigurationProperties.getNodes()));
+    }
+
+    @Bean
     public StringRedisTemplate stringRedisTemplate() {
-        return new StringRedisTemplate(jedisConnectionFactory());
+        //  return new StringRedisTemplate(jedisConnectionFactory());
+        return new StringRedisTemplate(redisConnectionFactory());
     }
 
     @Bean
