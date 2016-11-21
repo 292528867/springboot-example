@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.4.1.RELEASE</version><!-- lookup parent from repository -->
+        <version>1.4.2.RELEASE</version><!-- lookup parent from repository -->
     </parent>
 
     <properties>
@@ -116,23 +116,18 @@
             <artifactId>activiti-spring-boot-starter-basic</artifactId>
             <version>${activiti.version}</version>
         </dependency>
-        
-        <!-- querydsl -->
+
+        <!-- swagger -->
         <dependency>
-		  <groupId>com.mysema.querydsl</groupId>
-		  <artifactId>querydsl-core</artifactId>
-		  <version>3.7.4</version>
-		</dependency>
-		<dependency> 
-            <groupId>com.mysema.querydsl</groupId> 
-		    <artifactId>querydsl-apt</artifactId> 
-		    <version>3.7.4</version>
-		    </dependency>
-		<dependency> 
-		    <groupId>com.mysema.querydsl</groupId> 
-		    <artifactId>querydsl-jpa</artifactId> 
-		    <version>3.7.4</version> 
-		</dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.6.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -141,27 +136,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            
-               <plugin>
-				  <groupId>com.mysema.maven</groupId>
-				  <artifactId>maven-apt-plugin</artifactId>
-				  <version>1.0.4</version>
-				  <executions>
-				    <execution>
-				      <phase>generate-sources</phase>
-				      <goals>
-				        <goal>process</goal>
-				      </goals>
-				      <configuration>
-				        <outputDirectory>target/generated-sources</outputDirectory>
-				        <processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-				      </configuration>
-				    </execution>
-				  </executions>
-				</plugin>
         </plugins>
-        
-     
     </build>
 
 

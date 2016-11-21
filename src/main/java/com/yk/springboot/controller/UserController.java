@@ -2,17 +2,15 @@ package com.yk.springboot.controller;
 
 import com.yk.springboot.entity.User;
 import com.yk.springboot.service.UserService;
-import com.yk.springboot.shiro.TelPasswordToken;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.SimpleAuthenticationInfo;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,29 +49,33 @@ public class UserController {
     }
 
     /**
-     * 未登录时请求需要登录才能访问的url
+     * 未登录时请求需登录才能请求的接口时 跳转到该接口提示异常
      *
      * @return
      */
-    @RequestMapping(value = "requestBeforeLogin")
+    @RequestMapping(value = "requestBeforeLogin",method = RequestMethod.GET)
+    @ApiIgnore
     public Object requestBeforeLogin(String errMsg) {
         return errMsg;
     }
 
     /**
      * 保存用户
+     *
      * @param user
      * @return
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
+    @ApiOperation(value = "新增用户", httpMethod = "POST", response = String.class, notes = "新增用户")
+    @ApiParam(required = true, name = "user", value = "用户信息")
     public Object save(User user) {
         return userService.saveUser(user);
     }
 
-    @RequestMapping(value = "getUserInfo",method = RequestMethod.GET)
-    public Object getUserInfo(){
+    @RequestMapping(value = "getUserInfo", method = RequestMethod.GET)
+    public Object getUserInfo() {
         Subject subject = SecurityUtils.getSubject();
-        User user =(User) subject.getPrincipal();
+        User user = (User) subject.getPrincipal();
         return user;
     }
 
