@@ -4,6 +4,8 @@ import com.yk.springboot.entity.User;
 import com.yk.springboot.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class UserController {
         } catch (IncorrectCredentialsException e) {
             throw new IncorrectCredentialsException("用户名或者密码错误");
         }*/
+        Collections.emptyMap();
         User user = (User) subject.getPrincipal();
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("userId", user.getId());
@@ -53,7 +57,7 @@ public class UserController {
      *
      * @return
      */
-    @RequestMapping(value = "requestBeforeLogin",method = RequestMethod.GET)
+    @RequestMapping(value = "requestBeforeLogin", method = RequestMethod.GET)
     @ApiIgnore
     public Object requestBeforeLogin(String errMsg) {
         return errMsg;
@@ -66,8 +70,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "save", method = RequestMethod.POST)
-    @ApiOperation(value = "新增用户", httpMethod = "POST", response = String.class, notes = "新增用户")
-    @ApiParam(required = true, name = "user", value = "用户信息")
+    @ApiOperation(value = "新增用户", httpMethod = "POST", notes = "新增用户")
     public Object save(User user) {
         return userService.saveUser(user);
     }

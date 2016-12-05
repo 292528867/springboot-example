@@ -1,5 +1,9 @@
 package com.yk.springboot.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import org.springframework.validation.ValidationUtils;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -8,6 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "t_user")
+@ApiModel(value = "用户信息")
 public class User extends AbstractBaseEntity {
 
     private String tel;
