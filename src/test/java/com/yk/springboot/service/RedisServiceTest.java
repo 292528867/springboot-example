@@ -21,8 +21,7 @@ public class RedisServiceTest extends SpringBootExampleApplicationTests{
 
     @Test
     public void getValue() throws Exception {
-        System.out.println(redisService.getValue("key1"));
-        System.out.println(redisService.getValue("foo"));
+       assertEquals("test1",redisService.getValue("key1"));
     }
 
 }
